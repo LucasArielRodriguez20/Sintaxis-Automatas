@@ -8,18 +8,19 @@ int automata(char*);
 int main()
 {
     char palabra[1000];
-    int c,i=0,octal=0,decimal=0,hexa=0;
-    printf("ingrese su exprecion de numeros intercalados con $\n");
-    c=getchar();
-            while(c!='$'&& c!='\n'&& c!=EOF)
+    int c=0,i=0,octal=0,decimal=0,hexa=0;
+    printf("ingrese su expresion de numeros intercalados con $\n");
+    
+    while(c!='\n')
+    {
+        c=getchar();
+            while(c!='$'&& c!='\n')
             {
                 palabra[i]=c;
                 printf(" %c ",palabra[i]);
                 i++;   
                 c=getchar();
             }
-    while(c!=EOF)
-    {
         palabra[i]='\0';
         i=0;
         printf("palabra leida \n");
@@ -28,7 +29,6 @@ int main()
             if(esPalabra(palabra,&octal,&decimal,&hexa))
             {
                 printf("la palabra ingresada es correcta \n");
-                
             }
             else
             {
@@ -44,14 +44,6 @@ int main()
             printf("la palabra no pertenece al lenguaje");
             return 0;
         }
-        c=getchar();
-            while(c!='$'&& c!='\n'&& c!=EOF)
-            {
-                palabra[i]=c;
-                printf(" %c ",palabra[i]);
-                i++;   
-                c=getchar();
-            }
     } 
     printf("cantidad de palabras octales %d \n",octal);
     printf("cantidad de palabras decimales %d \n",decimal);
@@ -68,7 +60,6 @@ int palabraPertenece(char *  palabra)
         if(isdigit(palabra[i]) ||
                 palabra[i]=='+'||
                 palabra[i]=='-'||
-                palabra[i]==','||
                 palabra[i]=='A'||
                 palabra[i]=='x'||
                 palabra[i]=='B'||
@@ -111,14 +102,14 @@ int esPalabra(char*palabra,int *octal,int *decimal,int *hexa)
 
 //Devuelve el estado final
 int automata(char*palabra){
-    int tt[8][7]={{3,1,1,7,7,2,2},
-                  {1,1,1,7,7,7,7},
-                  {7,1,1,7,7,7,7},
-                  {4,4,7,7,5,7,7},
-                  {4,4,7,7,7,7,7},
-                  {6,6,6,6,7,7,7},
-                  {6,6,6,6,7,7,7},
-                  {7,7,7,7,7,7,7}};
+    int tt[8][6]={{3,1,1,7,7,2},
+                  {1,1,1,7,7,7},
+                  {7,1,1,7,7,7},
+                  {4,4,7,7,5,7},
+                  {4,4,7,7,7,7},
+                  {6,6,6,6,7,7},
+                  {6,6,6,6,7,7},
+                  {7,7,7,7,7,7}};
     int estado =0;
     int i=0;
     while(palabra[i]!='\0'&& estado!=7) {
