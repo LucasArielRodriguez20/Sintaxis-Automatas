@@ -1,18 +1,16 @@
-#include<stdio.h>
+#include<stdio.h> 
+#include<stdlib.h> //system()
 #include "columnas.h"
 int palabraPertenece(char *  );
 int esPalabra(char*,int* ,int* ,int* );
+int automata(char*);
 
 int main()
 {
     char palabra[1000];
     int c,i=0,octal=0,decimal=0,hexa=0;
     printf("ingrese su exprecion de numeros intercalados con $\n");
-    while((c=getchar())!=EOF)
-    {
-        if(c == '$')
-        {
-            c=getchar();
+    c=getchar();
             while(c!='$'&& c!='\n'&& c!=EOF)
             {
                 palabra[i]=c;
@@ -20,9 +18,8 @@ int main()
                 i++;   
                 c=getchar();
             }
-            if(c == '$')
-                ungetc(c,stdin);
-        }
+    while(c!=EOF)
+    {
         palabra[i]='\0';
         i=0;
         printf("palabra leida \n");
@@ -47,11 +44,20 @@ int main()
             printf("la palabra no pertenece al lenguaje");
             return 0;
         }
+        c=getchar();
+            while(c!='$'&& c!='\n'&& c!=EOF)
+            {
+                palabra[i]=c;
+                printf(" %c ",palabra[i]);
+                i++;   
+                c=getchar();
+            }
     } 
     printf("cantidad de palabras octales %d \n",octal);
     printf("cantidad de palabras decimales %d \n",decimal);
     printf("cantidad de palabras hexadecimales %d \n",hexa);
     
+    system("pause");
     return 0;
 }
 int palabraPertenece(char *  palabra)
@@ -70,7 +76,7 @@ int palabraPertenece(char *  palabra)
                 palabra[i]=='D'||
                 palabra[i]=='E'||
                 palabra[i]=='F'||
-                palabra[i]=='%')
+                palabra[i]=='$')
         {
             i++;
         }
@@ -83,78 +89,41 @@ int palabraPertenece(char *  palabra)
 }
 int esPalabra(char*palabra,int *octal,int *decimal,int *hexa)
 {
-    int tt[5][5]={{5,2,4,5,1},
-                  {5,2,4,5,5},
-                  {2,5,5,3,5},
-                  {3,5,5,5,5},
-                  {5,5,5,3,5}
-    };
-    int ttO[4][4]={{4,4,2,4},
-                  {1,4,4,3},
-                  {4,1,4,4},
-                  {3,4,4,4}
-    };
-    int ttH[4][4]={{4,1,4,4},
-                  {4,4,4,2},
-                  {2,4,3,4},
-                  {3,4,4,4}
-    };
-    int estado =0;
-    int i=0;
-    if(palabra[i]== '0')
-    {
-        i++;
-        if(palabra[i]=='x')
-        {
-            i=0;
-            //hexa
-             while(palabra[i]!='\0'&& estado!=4)
-            {
-                estado=ttH[estado][columnaH(palabra[i],estado)];
-                i++;
-            }
-
-            if(estado==2||estado==3)
-            {
-              *hexa+=1;
-              return 1;  
-            }
-            else
-            return 0;
-        }
-        else
-        {
-            i=0;
-            //octal
-             while(palabra[i]!='\0'&& estado!=4)
-            {
-                estado=ttO[estado][columnaO(palabra[i],estado)];
-                i++;
-            }
-
-            if(estado==2||estado==1||estado==3)
-            {
-                *octal+=1;
-                return 1;
-            }
-            else
-            return 0;
-        }
+    int estadoFinal = automata(palabra);
+    if(estadoFinal == 1 || estadoFinal == 3){
+        *decimal+=1;
+        return 1;
     }
-    else
-    {
-        while(palabra[i]!='\0'&& estado!=5)
-        {
-            estado=tt[estado][columnaD(palabra[i],estado)];
-            i++;
-        }
-
-        if(estado==2||estado==3||estado==4)
-        {
-            *decimal+=1;
+    else{
+        if(estadoFinal == 4){
+            *octal+=1;
             return 1;
         }
-        else
-        return 0;
+        else{
+            if(estadoFinal == 6){
+                *hexa+=1;
+                return 1;
+            }
+        }
     }
+    return 0;
+}
+
+//Devuelve el estado final
+int automata(char*palabra){
+    int tt[8][7]={{3,1,1,7,7,2,2},
+                  {1,1,1,7,7,7,7},
+                  {7,1,1,7,7,7,7},
+                  {4,4,7,7,5,7,7},
+                  {4,4,7,7,7,7,7},
+                  {6,6,6,6,7,7,7},
+                  {6,6,6,6,7,7,7},
+                  {7,7,7,7,7,7,7}};
+    int estado =0;
+    int i=0;
+    while(palabra[i]!='\0'&& estado!=7) {
+        estado=tt[estado][columna(palabra[i],estado)];
+        i++;
+    }
+    return estado;
 }

@@ -1,234 +1,67 @@
 #include "columnas.h"
-int columnaO(int c , int estado)
-{
-    if(estado == 0)
-    {
-        switch (c)
-                {
-                    case'0':
-                        return 2;
-                        break;
-                    default:
-                        return 0;
-                        break;
-                }
-    }
-    else
-    {
-        if(estado==1)
-        {
-            if(isdigit(c))
-            {
-                return 0;
-            }
-            switch (c)
-                {
-                    case',':
-                        return 3;
-                        break;
-                    default:
-                        return 1;
-                        break;
-                }
-        }
-        else
-        {
-            if(estado==2)
-            {
-                if(isdigit(c))
-                {
-                    if(c!=0)
-                        return 1;
-                    else
-                        return 0;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            {
-                if(estado==3)
-                {
-                   if(isdigit(c))
-                    {
-                        return 0;
-                     }
-                    else
-                    {
-                        return 1;
-                    }
-                }
-            }
-        }
-    }
-    
-}
-int columnaH(int c , int estado)
-{
-    if(estado==0)
-    {
-        switch (c)
-                {
-                    case'0':
-                        return 1;
-                        break;
-                    default:
-                        return 0;
-                        break;
-                }
-    }
-    else
-    {
-        if(estado==1)
-        {
-            switch (c)
-                    {
-                    case'x':
-                        return 3;
-                        break;
-                    default:
-                        return 0;
-                        break;
-                    }
-        }
-        else
-        {
-            if(estado==2)
-            {
-                if(isdigit(c)||isAToF(c))
-                 return 0;
-                switch (c)
-                {
-                    case',':
-                        return 2;
-                        break;
-                    default:
-                        return 1;
-                        break;
-                }
-            }
-            else
-            {
-                if(estado==3)
-                {
-                    if(isdigit(c)||isAToF(c))
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return 1;
-                    }
-                }
-            }
-        }
-    }
-}
 int isAToF(int c){
-    if(c>=65&&c<=70)
+    if(c>='A'&&c<='F')
     return 1;
     else
     return 0;
 }
-int columnaD(int c,int estado)
+int columna(int c,int estado)
 {
-    if(estado==0)
+    switch (estado)
     {
-        if(isdigit(c))
-        {
-            if(c!=0)
-                return 1;
-        }
-        switch (c)
-                {
-                    case'+':
-                        return 4;
-                        break;
-                    case'-':
-                        return 4;
-                        break;
-                    case'0':
-                        return 2;
-                        break;
-                    default:
-                        return 0;
-                        break;
-                }
-    }
-    else
-    {
-        if(estado==1)
-        {
-            if(isdigit(c))
-            {
-                if(c!=0)
-                    return 1;
-            }
-            switch (c)
-                {
-                    case'0':
-                        return 2;
-                        break;
-                    default:
-                        return 0;
-                        break;
-                }
-        }
+    case 0:
+        if(c=='0')
+            return 3;
         else
-        {
-            if(estado==2)
-            {
-                if(isdigit(c))
-                {
-                    return 0;
-                }
-                switch (c)
-                    {
-                        case'+':
-                            return 4;
-                            break;
-                        case'-':
-                            return 4;
-                            break;
-                        case',':
-                            return 3;
-                            break;
-                        default:
-                            return 1;
-                            break;
-                    }
-            }
+            if(isdigit(c))
+                return 1;
             else
-            {
-                if(estado==3)
-                {
-                    if(isdigit(c))
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return 1;
-                    }
-                }
+                if(c=='+'||c=='-')
+                    return 2;
                 else
-                {
-                    if(estado==4)
-                    {
-                        switch (c)
-                        {
-                            case',':
-                                return 3;
-                                break;
-                            default:
-                                return 1;
-                                break;
-                        }
-                    }
-                }
-            }
-        }
+                    return 7;
+        break;
+    case 1:
+        if(isdigit(c))
+            return 1;
+        else
+            return 7;
+        break;
+    case 2:
+        if(isdigit(c))
+            return 1;
+        else
+            return 7;
+        break;
+    case 3:
+        if(c>='0' && c<='7')
+            return 4;
+        else
+            if(c=='x')
+                return 5;
+            else
+                return 7;
+        break;
+    case 4:
+        if(c>='0' && c<='7')
+            return 4;
+        else
+            return 7;
+        break;
+    case 5:
+        if(isdigit(c) || isAToF(c))
+            return 6;
+        else
+            return 7;
+        break;
+    case 6:
+        if(isdigit(c) || isAToF(c))
+            return 6;
+        else
+            return 7;
+        break;
+    default:
+        return 7;
+        break;
     }
 }
