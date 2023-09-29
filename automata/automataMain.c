@@ -1,4 +1,6 @@
 #include "automata.h"
+#include "columnas.h"
+#include <ctype.h> 
 #include<stdio.h> 
 #include<stdlib.h> //system()
 

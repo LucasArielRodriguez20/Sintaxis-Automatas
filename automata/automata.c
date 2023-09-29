@@ -66,12 +66,12 @@ int esDecimal(int estadoFinal){
 
 //Devuelve si el estado final corresponde a un numero hexadecimal
 int esHexa(int estadoFinal){
-    return estadoFinal == 4;
+    return estadoFinal == 6;
 }
 
 //Devuelve si el estado final corresponde a un numero octal
 int esOctal(int estadoFinal){
-    return estadoFinal == 6;
+    return estadoFinal == 4;
 }
 
 //Devuelve el estado final del automata de constantes enteras
