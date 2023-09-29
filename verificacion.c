@@ -1,7 +1,9 @@
-#include "automata.h"
+#include "./automata/automata.h"
+#include <stdio.h>
 
 int verificacion(){
-    int c,i=0,j=0,estado=0,top=0;
+    int c,i=0,estado=0,top=0;
+    int ultimoFueNumero = 0;
     char expresionAritmetica[1000];
     char numero[10];
     while((c=getchar())!='\n')
@@ -17,7 +19,7 @@ int verificacion(){
     ungetc(c,stdin);
     expresionAritmetica[i]='\n';
     top=i-1;
-    if(!palabraPertenece(expresionAritmetica))//verificamos la expresion leida
+    if(!cadenaPerteneceCalculadora(expresionAritmetica))//verificamos la expresion leida
     {
         printf("hay un caracter incorrecto en la expresion \n");
         return 0;
@@ -27,32 +29,36 @@ int verificacion(){
     while(expresionAritmetica[i]!='\n')//mientras no se acabe la expresion
     {
         //encontramos un operador o un numero en la expresion
-        if(isdigit(expresionAritmetica[i]))///es un numero 
+        if(isdigit(expresionAritmetica[i]) && !ultimoFueNumero)///es un numero 
         {
+            int j = 0;
             while(isdigit(expresionAritmetica[i]))//recolecto los numeros de la expresion 
             {
                 numero[j]=expresionAritmetica[i];
                 j+=1;
                 i+=1;
             }
-            if(esPalabra(numero))//verifico que ese numero es realmente un decimal 
+            if(esPalabraDecimal(numero))//verifico que ese numero es realmente un decimal 
             {
-                estado= automataAritmetico(1,estado);//avanzo en mi automata
+                ultimoFueNumero = 1;// Dejo la marca que el ultimo fue un numero, por lo que el siguiente debe ser un operador
             } 
             else
             {
                 printf("ERROR ingreso de numero invalido\n");
                 return 0;
             }
-            j=0;
         }
-        else//no es un numero entonces es un operador 
+        else if(ultimoFueNumero)//no es un numero entonces es un operador 
         {
-            estado=automataAritmetico(0,estado);
+            ultimoFueNumero = 0;
             i++;
         }
+        else{
+            printf("ERROR expresion invalida\n");
+            return 0;
+        }
     }
-    if(estado == 1)
+    if(ultimoFueNumero == 1)
     {
         while (top!=-1)//devulevo la entrada en el mismo sentido que la ingrese para no afectar la precedencia
         {
@@ -62,5 +68,5 @@ int verificacion(){
         return 1;
     }
     else 
-    return 0;
+        return 0;
 }

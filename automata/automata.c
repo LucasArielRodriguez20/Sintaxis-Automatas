@@ -1,58 +1,11 @@
 #include<stdio.h> 
 #include<stdlib.h> //system()
+#include <ctype.h> //isdigit()
 #include "columnas.h"
-int palabraPertenece(char *  );
-int esPalabra(char*,int* ,int* ,int* );
-int automata(char*);
+#include "automata.h"
 
-int main()
-{
-    char palabra[1000];
-    int c=0,i=0,octal=0,decimal=0,hexa=0;
-    printf("ingrese su expresion de numeros intercalados con $\n");
-    
-    while(c!='\n')
-    {
-        c=getchar();
-            while(c!='$'&& c!='\n')
-            {
-                palabra[i]=c;
-                printf(" %c ",palabra[i]);
-                i++;   
-                c=getchar();
-            }
-        palabra[i]='\0';
-        i=0;
-        printf("palabra leida \n");
-        if(palabraPertenece(palabra))
-        {
-            if(esPalabra(palabra,&octal,&decimal,&hexa))
-            {
-                printf("la palabra ingresada es correcta \n");
-            }
-            else
-            {
-                printf("la palabra ingresada no es correcta \n");
-                printf("cantidad de palabras octales %d \n",octal);
-                printf("cantidad de palabras decimales %d \n",decimal);
-                printf("cantidad de palabras hexadecimales %d \n",hexa);
-                return 0;
-            }
-        }
-        else
-        {
-            printf("la palabra no pertenece al lenguaje");
-            return 0;
-        }
-    } 
-    printf("cantidad de palabras octales %d \n",octal);
-    printf("cantidad de palabras decimales %d \n",decimal);
-    printf("cantidad de palabras hexadecimales %d \n",hexa);
-    
-    system("pause");
-    return 0;
-}
-int palabraPertenece(char *  palabra)
+// Devuelve si la cadena esta compuesta por caracteres del alfabeto de constantes enteras
+int cadenaPerteneceConstantesEnteras(char *  palabra)
 {
     int i=0;
     while(palabra[i]!='\0')
@@ -78,30 +31,51 @@ int palabraPertenece(char *  palabra)
     }
     return 1;
 }
-int esPalabra(char*palabra,int *octal,int *decimal,int *hexa)
-{
-    int estadoFinal = automata(palabra);
-    if(estadoFinal == 1 || estadoFinal == 3){
-        *decimal+=1;
-        return 1;
-    }
-    else{
-        if(estadoFinal == 4){
-            *octal+=1;
-            return 1;
+
+// Devuelve si la cadena esta compuesta por caracteres del alfabeto de operadores aritmeticos
+int cadenaPerteneceCalculadora(char * palabra){
+    int i=0;
+    while(palabra[i]!='\0' && palabra[i]!='\n')
+    {
+        printf("%c", palabra[i]);
+        if(isdigit(palabra[i]) ||
+            palabra[i]=='+'||
+            palabra[i]=='-'||
+            palabra[i]=='*'||
+            palabra[i]=='/')
+        {
+            i++;
         }
-        else{
-            if(estadoFinal == 6){
-                *hexa+=1;
-                return 1;
-            }
+        else
+        {
+            return 0;
         }
     }
-    return 0;
+    return 1;
 }
 
-//Devuelve el estado final
-int automata(char*palabra){
+// Devuelve si una cadena pertenece al lenguaje de los decimales
+int esPalabraDecimal(char*palabra){
+    return esDecimal(automataConstantesEnteras(palabra));
+}
+
+//Devuelve si el estado final corresponde a un numero decimal
+int esDecimal(int estadoFinal){
+    return estadoFinal == 1 || estadoFinal == 3;
+}
+
+//Devuelve si el estado final corresponde a un numero hexadecimal
+int esHexa(int estadoFinal){
+    return estadoFinal == 4;
+}
+
+//Devuelve si el estado final corresponde a un numero octal
+int esOctal(int estadoFinal){
+    return estadoFinal == 6;
+}
+
+//Devuelve el estado final del automata de constantes enteras
+int automataConstantesEnteras(char*palabra){
     int tt[8][6]={{3,1,1,7,7,2},
                   {1,1,1,7,7,7},
                   {7,1,1,7,7,7},
@@ -110,10 +84,10 @@ int automata(char*palabra){
                   {6,6,6,6,7,7},
                   {6,6,6,6,7,7},
                   {7,7,7,7,7,7}};
-    int estado =0;
-    int i=0;
+    int estado = 0;
+    int i=0 ;
     while(palabra[i]!='\0'&& estado!=7) {
-        estado=tt[estado][columna(palabra[i],estado)];
+        estado=tt[estado][columna(palabra[i])];
         i++;
     }
     return estado;

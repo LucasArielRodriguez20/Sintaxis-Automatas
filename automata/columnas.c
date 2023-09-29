@@ -1,12 +1,16 @@
 #include "columnas.h"
 #include<stdio.h> 
+
+// Devuelve si c esta en el rango [A-F]
 int isAToF(int c){
     if(c>='A'&&c<='F')
         return 1;
     else
         return 0;
 }
-int columna(int c,int estado)
+
+// Dado un caracter devuelve cual es la columna que le corresponde en la tabla de transiciones del automata de constantes enteras
+int columna(int c)
 {
     if(c=='0')
         return 0;

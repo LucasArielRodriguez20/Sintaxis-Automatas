@@ -1,15 +1,18 @@
 BIN = automata.exe
-OBJ = columnas.o automata.o
+OBJ = columnas.o automata.o automataMain.o
 CC = gcc
 CFLAGS = -std=c18
 RM = rm -f
 $(BIN): $(OBJ)	
 	$(CC) $(OBJ) -o $(BIN) $(CFLAGS)
 
-automata.o: automata.c columnas.h 
+automataMain.o: automataMain.c
+	$(CC) -c automataMain.c -o automataMain.o $(CFLAGS)
+
+automata.o: automata.c
 	$(CC) -c automata.c -o automata.o $(CFLAGS)
 
-columnas.o: columnas.h
+columnas.o: columnas.c
 	$(CC) -c columnas.c -o columnas.o $(CFLAGS)
 
 clean:

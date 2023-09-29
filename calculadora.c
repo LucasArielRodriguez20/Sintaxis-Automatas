@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include<stdlib.h> //system()
 #include <ctype.h> //isdigit()
 #include "stack.h"//pop(),push()....
 #include "verificacion.h"
@@ -13,14 +14,14 @@ int main()
     struct Nodo * pilaPolaca=NULL;
     int c=0;
     double top=0;
-    printf("\n ingrese una expresion aritmetica con espacios entre operadores y numeros \nactualmente la calculadora solo admite * / - + como operandos \n");
+    printf("\n Ingrese una expresion aritmetica del modo '1*2+5/5' \nActualmente la calculadora solo admite * / - + como operandos \n");
     if(!verificacion())
     {
         printf("ERROR expresion aritmetica erronea\n");
         return 0;
     }
         
-    printf("termino la verificacion \n");
+    printf("    La expresion es valida \n");
     infijaApostfija(&pilaPolaca);
     ///comienzo calculadora
      while((c=numeroADecimal(&stack,&pilaPolaca))!=EOF) 
@@ -43,8 +44,10 @@ int main()
                 {
                     pushN(&stack,(popN(&stack)/top));
                 }
-                else
+                else{
                     printf("Error division por 0");
+                    return 0;
+                }
                 break;
             case '0':
                 break;
@@ -57,10 +60,11 @@ int main()
             case '!':
                 break;
             case '\n':
-            printf("el resultado es %.2f",popN(&stack));
+                printf("El resultado es %.2f \n",popN(&stack));
+                system("pause");
                 break;
             default:
-                printf("es un dato no valido %c \n",c);
+                printf("Es un dato no valido %c \n",c);
                 return 0;
                 break;
         }
@@ -180,7 +184,7 @@ int pertenceAlAlfabeto(int c)
     if(c>=45 && c<=57||c>=40 && c<=43||c==32 || c=='\n'|| c=='x')
         return 1;
     else{
-        printf("\n error %c no pertenece al alfabeto",c);
+        printf("\n Error %c no pertenece al alfabeto",c);
         return 0;
     }     
 }
