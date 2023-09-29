@@ -1,22 +1,29 @@
 #include <stdio.h>
 #include <ctype.h> //isdigit()
-#include <math.h>//pow()
 #include "stack.h"//pop(),push()....
+#include "verificacion.h"
 
-int numeroADecimal(ptrNodoN *);
+int numeroADecimal(ptrNodoN *,ptrNodo *);
 int pertenceAlAlfabeto(int);
-void infijaApostfija();
+void infijaApostfija(ptrNodo *);
 
 int main()
 {
     struct NodoN * stack=NULL;
+    struct Nodo * pilaPolaca=NULL;
     int c=0;
     double top=0;
     printf("\n ingrese una expresion aritmetica con espacios entre operadores y numeros \nactualmente la calculadora solo admite * / - + como operandos \n");
-    //verificacionDeExpresion();
-    infijaApostfija();
+    if(!verificacion())
+    {
+        printf("ERROR expresion aritmetica erronea\n");
+        return 0;
+    }
+        
+    printf("termino la verificacion \n");
+    infijaApostfija(&pilaPolaca);
     ///comienzo calculadora
-     while((c=numeroADecimal(&stack))!=EOF)
+     while((c=numeroADecimal(&stack,&pilaPolaca))!=EOF) 
     {
         switch(c)
         {
@@ -33,7 +40,9 @@ int main()
             case '/':
                 top=popN(&stack);
                 if(top!=0)
+                {
                     pushN(&stack,(popN(&stack)/top));
+                }
                 else
                     printf("Error division por 0");
                 break;
@@ -45,29 +54,33 @@ int main()
                 break;
             case '$':
                 break;
+            case '!':
+                break;
             case '\n':
-                printf("el resultado es %.2f",popN(&stack));
+            printf("el resultado es %.2f",popN(&stack));
                 break;
             default:
-                printf("es un dato no valido \n");
+                printf("es un dato no valido %c \n",c);
                 return 0;
                 break;
         }
-    }
+    } 
     return 0;
 }
-void infijaApostfija(){
+void infijaApostfija(ptrNodo * pilaPolaca){
     int c=0,aux;
     struct Nodo * stack=NULL;
     struct Nodo * operadores=NULL;
+    struct Nodo * auxPila=NULL;
      ///infija a postfija
-    while((c=getchar())!=EOF && c !='\n')//continuo mientras c no sea fin de archivo y sea diferente a salto de linea 
+    while((c=getchar())!='\n')//continuo mientras c no sea fin de archivo y sea diferente a salto de linea 
     {
         if(pertenceAlAlfabeto(c))//verifico que c sea parte de mi alfabeto 
         {
             switch(c)
             {
                 case '+':
+                    push(&stack,' ');
                     if(operadores == NULL)//si la pila esta vacia agrego el operador 
                         push(&operadores,c);
                     else
@@ -88,6 +101,7 @@ void infijaApostfija(){
                     }
                     break;
                 case '-':
+                    push(&stack,' ');
                 //mismo procedimiento para el -
                     if(operadores == NULL)
                         push(&operadores,c);
@@ -109,6 +123,7 @@ void infijaApostfija(){
                     }
                     break;
                 case '*':
+                    push(&stack,' ');
                     if(operadores == NULL)//si la pila esta vacia agrego el operador 
                         push(&operadores,c);
                     else
@@ -125,6 +140,7 @@ void infijaApostfija(){
                     }
                     break;
                 case '/':
+                    push(&stack,' ');//separar numeros con operadores
                     if(operadores == NULL)
                         push(&operadores,c);
                     else
@@ -142,9 +158,8 @@ void infijaApostfija(){
                     break;
                 case'\t'://ignoro tabulaciones
                     break;
-                case' ':
-                    push(&stack,c);//guardo los espacios como caracter centinela
-                    break; 
+                case' '://ignoro espacios
+                    break;
                 default:
                     push(&stack,c);//guardo un numero en la pila principal
                     break;
@@ -153,11 +168,10 @@ void infijaApostfija(){
     }
     while(operadores)// si queda algun operador en mi pila secundaria lo extraigo
         push(&stack,pop(&operadores));
-        
     ///pila cargada con la expresion 
-    push(&stack,'\n');//agrego un fin de exprecion con el salto de linea
+    push(&stack,'\n');
     while(stack)
-        ungetc(pop(&stack),stdin);//devuelvo la exprecion en polaca inversa a la entrada 
+        push(pilaPolaca,pop(&stack));//devuelvo la exprecion en polaca inversa a la entrada 
 }
 
 int pertenceAlAlfabeto(int c)
@@ -171,127 +185,20 @@ int pertenceAlAlfabeto(int c)
     }     
 }
 
-int numeroADecimal(ptrNodoN * stack)
+int numeroADecimal(ptrNodoN * stack,ptrNodo *pilaPolaca)
 {
     int c=0,contador=0,contadorFraccionario=0;
     double sum=0.0;
     double numero[1000],fraccion[1000];//el numero en su parte entera y en su parte fraccionaria
-    if (isdigit(c=getchar()))
+    if (isdigit(c=pop(pilaPolaca)))
     {
-        if(c=='0')
-        {
-            c=getchar();//leo el siguiente 
-            if(c=='x')
-            {
-                //hexa
-                c=getchar();
-                while (isdigit(c)||(c>=65&&c<=70))//mientras sea un digito o una letra [A-F]
-                {
-                    if((c>=65&&c<=70))//es una letra [A-F]
-                    {
-                        numero[contador]=c-48-7;
-                        contador++;
-                        c=getchar();
-                    }
-                    else
-                    {
-                        // es un digito
-                        numero[contador]=(c-48);
-                        contador++;
-                        c=getchar();
-                    }
-                }
-                contador--;
-                for(int i=0;contador>=0;i++)
-                {
-                    sum+= (numero[contador]*pow(16,i));//convierto la parte entera en un decimal
-                    contador--;
-                }
-                
-                if(c == ','||c =='.')//encuentro una coma o punto para la parte fraccionaria
-                {
-                    c=getchar();
-                    while (isdigit(c))
-                    {
-                        if((c>=65&&c<=70))//es una letra [A-F]
-                        {
-                            numero[contadorFraccionario]=c-48-7;
-                            contadorFraccionario++;
-                            c=getchar();
-                        }
-                        else
-                        {
-                            // es un digito
-                            numero[contadorFraccionario]=(c-48);
-                            contadorFraccionario++;
-                            c=getchar();
-                        }
-                    }
-                    contadorFraccionario--;
-                    for(int i=((contadorFraccionario+1)*-1);contadorFraccionario>=0;i++)
-                    {
-                        //convierto la parte fraccionaria  en un decimal y la agrego al numero que ya cargue su parte entera
-                        sum+= (fraccion[contadorFraccionario]*pow(16,i));
-                        contadorFraccionario--;
-                    }
-                }
-                pushN(stack,sum);//guardo el numero en la pila final
-                sum=0;
-                contador=0;
-                contadorFraccionario=0;
-                ungetc(c,stdin);//devuelvo el caracter que no es un digito del ultimo while
-                return 48;
-            }
-            else
-            {
-                //octal
-                //mismo procedimiento para el octal solo que cambia el primer parametro de pow en un 8
-                while (isdigit(c))
-                {
-                    numero[contador]=(c-48);
-                    contador++;
-                    c=getchar();
-                }
-                contador--;
-                for(int i=0;contador>=0;i++)
-                {
-                    sum+= (numero[contador]*pow(8,i));
-                    contador--;
-                }
-                
-                if(c == ','||c =='.')
-                {
-                    c=getchar();
-                    while (isdigit(c))
-                    {
-                        fraccion[contadorFraccionario]=(c-48);
-                        contadorFraccionario++;
-                        c=getchar();
-                    }
-                    contadorFraccionario--;
-                    for(int i=((contadorFraccionario+1)*-1);contadorFraccionario>=0;i++)
-                    {
-                        sum+= (fraccion[contadorFraccionario]*pow(8,i));
-                        contadorFraccionario--;
-                    }
-                }
-                pushN(stack,sum);
-                sum=0;
-                contador=0;
-                contadorFraccionario=0;
-                ungetc(c,stdin);
-                return 48;
-            }
-        }
-        else
-        {
             //decimal
             //mismo procedimiento para el decimal solo que cambia el uso de pow , en este caso se utiliza para formar la parte fraccionaria
-            while (isdigit(c))
+                 while (isdigit(c))
                 {
-                    numero[contador]=(c-48);
-                    contador++;
-                    c=getchar();
+                    sum*=10;
+                    sum+=(c-'0');
+                    c=pop(pilaPolaca);
                 }
                 contador--;
                 for(int i=0;contador>=0;i++)
@@ -300,29 +207,12 @@ int numeroADecimal(ptrNodoN * stack)
                     sum+= numero[i];
                     contador--;
                 }
-                
-                if(c == ','||c =='.')
-                {
-                    c=getchar();
-                    while (isdigit(c))
-                    {
-                        fraccion[contadorFraccionario]=(c-48);
-                        contadorFraccionario++;
-                        c=getchar();
-                    }
-                    contadorFraccionario--;
-                    for(int i=0;contadorFraccionario>=i;i++)
-                    {
-                        sum+= (fraccion[i]/pow(10,(i+1)));
-                    }
-                }
                 pushN(stack,sum);
                 sum=0;
                 contador=0;
                 contadorFraccionario=0;
-                ungetc(c,stdin);
-                return 48;
-        }
+                push(pilaPolaca,c);
+                return '0';
     }
     else
     return c;//devuelvo el operador o espacio o tabulacion 
