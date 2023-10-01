@@ -21,7 +21,7 @@ int verificacion(){
     top=i-1;
     if(!cadenaPerteneceCalculadora(expresionAritmetica))//verificamos la expresion leida
     {
-        printf("hay un caracter incorrecto en la expresion \n");
+        printf("    ERROR Hay un caracter incorrecto en la expresion \n");
         return 0;
     }
     //si esta todo correcto seguimos analizando 
@@ -44,7 +44,7 @@ int verificacion(){
             } 
             else
             {
-                printf("ERROR ingreso de numero invalido\n");
+                printf("    ERROR Ingreso de numero invalido\n");
                 return 0;
             }
         }
@@ -54,7 +54,7 @@ int verificacion(){
             i++;
         }
         else{
-            printf("ERROR expresion invalida\n");
+            printf("    ERROR Expresion invalida\n");
             return 0;
         }
     }
@@ -67,6 +67,8 @@ int verificacion(){
         }
         return 1;
     }
-    else 
+    else {
+        printf("    ERROR Expresion aritmetica erronea\n");
         return 0;
+    }
 }
